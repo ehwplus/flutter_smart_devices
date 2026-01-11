@@ -1,7 +1,7 @@
 name: flutter_smart_devices
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: Unified access layer for TP-Link Tapo plugs and FRITZ! smart home devices.
+version: 0.1.0
+homepage: https://github.com/ehwplus/flutter_smart_devices
 
 environment:
   sdk: ^3.10.4
@@ -10,6 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_tapo:
+    git:
+      url: https://github.com/ehwplus/flutter_tapo.git
+  flutter_fritzapi:
+    git:
+      url: https://github.com/ehwplus/flutter_fritzapi.git
+  http: ^1.2.2
+  collection: ^1.18.0
+  meta: ^1.12.0
 
 dev_dependencies:
   flutter_test:
