@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_fritzapi/flutter_fritzapi/energy_stats.dart';
 import 'package:flutter_smart_devices/flutter_smart_devices.dart';
 import 'package:flutter_smart_devices/src/adapters/fritz_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,11 +15,13 @@ void main() {
     setUp(() {
       client = MockClient((request) async {
         if (request.url.path.endsWith('/login_sid.lua') && request.method == 'GET') {
-          const xml = '<SessionInfo><SID>0000000000000000</SID><Challenge>1234</Challenge><BlockTime>0</BlockTime><Rights/><Users><User>demo</User></Users></SessionInfo>';
+          const xml =
+              '<SessionInfo><SID>0000000000000000</SID><Challenge>1234</Challenge><BlockTime>0</BlockTime><Rights/><Users><User>demo</User></Users></SessionInfo>';
           return http.Response(xml, 200);
         }
         if (request.url.path.endsWith('/login_sid.lua') && request.method == 'POST') {
-          const xml = '<SessionInfo><SID>1111111111111111</SID><Challenge>1234</Challenge><BlockTime>0</BlockTime><Rights/><Users><User>demo</User></Users></SessionInfo>';
+          const xml =
+              '<SessionInfo><SID>1111111111111111</SID><Challenge>1234</Challenge><BlockTime>0</BlockTime><Rights/><Users><User>demo</User></Users></SessionInfo>';
           return http.Response(xml, 200);
         }
         if (request.url.path.endsWith('/data.lua')) {
@@ -36,9 +39,9 @@ void main() {
                       {
                         'skills': [
                           {'type': 'SmartHomeMultimeter', 'powerConsumptionInWatt': 42.0},
-                          {'type': 'SmartHomeTemperatureSensor', 'currentInCelsius': 23.5}
-                        ]
-                      }
+                          {'type': 'SmartHomeTemperatureSensor', 'currentInCelsius': 23.5},
+                        ],
+                      },
                     ],
                   },
                   {
@@ -50,12 +53,12 @@ void main() {
                       {
                         'skills': [
                           {'type': 'SmartHomeTemperatureSensor', 'currentInCelsius': 21.0},
-                          {'type': 'SmartHomeHumiditySensor', 'currentRelativeHumidity': 47}
-                        ]
-                      }
+                          {'type': 'SmartHomeHumiditySensor', 'currentRelativeHumidity': 47},
+                        ],
+                      },
                     ],
-                  }
-                ]
+                  },
+                ],
               },
               'sid': '1111111111111111',
             };
@@ -66,17 +69,17 @@ void main() {
               'data': {
                 'active': [
                   {'name': 'Laptop', 'mac': '00:11:22:33:44:55', 'ip': '192.168.178.20', 'active': true},
-                ]
-              }
+                ],
+              },
             };
             return http.Response(jsonEncode(payload), 200);
           }
         }
         if (request.url.path.endsWith('/net/home_auto_query.lua')) {
           final payload = {
-            'sum_Month': 1200,
-            'sum_Year': 15000,
-            'sum_Day': 120,
+            'sum_Month': '1200', // strings to simulate firmware that returns strings
+            'sum_Year': '15000',
+            'sum_Day': '120',
             'DeviceConnectState': '2',
             'DeviceID': '17',
             'DeviceSwitchState': '1',
@@ -87,30 +90,29 @@ void main() {
               'ebene': 0,
               'anzahl': 1,
               'times_type': 1,
-              'values': [1]
-            }
+              'values': [1],
+            },
           };
           return http.Response(jsonEncode(payload), 200);
         }
         if (request.url.path.endsWith('/internet/inetstat_monitor.lua')) {
-          final payload = {
-            'traffic': {
-              'bytes_sent': 1024,
-              'bytes_rcvd': 2048,
-              'sum_bytes': 3072,
-            }
-          };
-          return http.Response(jsonEncode(payload), 200);
+          const html = '''
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+var data = {"traffic":{"bytes_sent":1024,"bytes_rcvd":2048,"sum_bytes":3072},"other":"ignored"};
+</script>
+</body>
+</html>
+''';
+          return http.Response(html, 200);
         }
         return http.Response('Not Found', 404);
       });
 
       adapter = FritzBoxAdapter(
-        const FritzBoxConfig(
-          baseUrl: 'http://fritz.box',
-          password: 'secret',
-          username: 'demo',
-        ),
+        const FritzBoxConfig(baseUrl: 'http://fritz.box', password: 'secret', username: 'demo'),
         httpClient: client,
       );
     });
@@ -129,10 +131,11 @@ void main() {
       await adapter.discoverDevices();
       final energy = await adapter.readEnergy('fritz:17');
       expect(energy?.todayWh, 120);
+      expect(energy?.raw, isA<EnergyStats>());
       final environment = await adapter.readEnvironment('fritz:18');
       expect(environment?.temperatureCelsius, 21.0);
       expect(environment?.humidityPercent, 47);
-      final counters = await adapter.readNetworkCounters();
+      final counters = await adapter.readOnlineCounters();
       expect(counters?.totalBytes, 3072);
       final clients = await adapter.listWifiClients();
       expect(clients.first.name, 'Laptop');

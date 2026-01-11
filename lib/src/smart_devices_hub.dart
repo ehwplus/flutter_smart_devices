@@ -79,12 +79,12 @@ class SmartDevicesHub {
     return SmartDeviceReading(energy: energy, environment: environment);
   }
 
-  Future<NetworkCounters?> readNetworkCounters() async {
+  Future<NetworkCounters?> readOnlineCounters() async {
     final fritz = _fritzAdapter;
     if (fritz == null) {
       return null;
     }
-    return fritz.readNetworkCounters();
+    return fritz.readOnlineCounters();
   }
 
   Future<List<WifiClient>> listWifiClients() async {

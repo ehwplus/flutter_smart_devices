@@ -12,10 +12,7 @@ class SmartDevicesExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Smart Devices Demo',
-      theme: ThemeData(
-        colorSchemeSeed: Colors.indigo,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
       home: const SmartDevicesDemoPage(),
     );
   }
@@ -61,9 +58,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   }
 
   Future<void> _addTapoPlug() async {
-    if (tapoHostController.text.isEmpty ||
-        tapoEmailController.text.isEmpty ||
-        tapoPasswordController.text.isEmpty) {
+    if (tapoHostController.text.isEmpty || tapoEmailController.text.isEmpty || tapoPasswordController.text.isEmpty) {
       _showMessage('Please provide host, email and password for Tapo.');
       return;
     }
@@ -132,7 +127,9 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
         readings[device.id] = reading;
       });
     } catch (error) {
-      _showMessage('Failed to read ${device.name}: $error');
+      final message = 'Failed to read ${device.name}: $error';
+      _showMessage(message);
+      print(message);
     } finally {
       if (mounted) {
         setState(() {
@@ -147,7 +144,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
       fritzBusy = true;
     });
     try {
-      final result = await hub.readNetworkCounters();
+      final result = await hub.readOnlineCounters();
       setState(() {
         counters = result;
       });
@@ -185,9 +182,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Smart Devices Demo'),
-      ),
+      appBar: AppBar(title: const Text('Smart Devices Demo')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -237,14 +232,8 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
             DropdownButton<SmartDeviceType>(
               value: tapoModel,
               items: const [
-                DropdownMenuItem(
-                  value: SmartDeviceType.tapoP115,
-                  child: Text('Tapo P115'),
-                ),
-                DropdownMenuItem(
-                  value: SmartDeviceType.tapoP100,
-                  child: Text('Tapo P100'),
-                ),
+                DropdownMenuItem(value: SmartDeviceType.tapoP115, child: Text('Tapo P115')),
+                DropdownMenuItem(value: SmartDeviceType.tapoP100, child: Text('Tapo P100')),
               ],
               onChanged: (value) {
                 if (value != null) {
@@ -258,11 +247,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
             ElevatedButton.icon(
               onPressed: tapoBusy ? null : _addTapoPlug,
               icon: tapoBusy
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.power),
               label: const Text('Add plug and fetch energy'),
             ),
@@ -312,10 +297,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
             ),
             if (fritzError != null) ...[
               const SizedBox(height: 8),
-              Text(
-                fritzError!,
-                style: const TextStyle(color: Colors.red),
-              ),
+              Text(fritzError!, style: const TextStyle(color: Colors.red)),
             ],
           ],
         ),
@@ -392,10 +374,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
                   onPressed: fritzBusy ? null : _loadNetworkCounters,
                   child: const Text('Read online counters'),
                 ),
-                ElevatedButton(
-                  onPressed: fritzBusy ? null : _loadWifiClients,
-                  child: const Text('List Wi-Fi clients'),
-                ),
+                ElevatedButton(onPressed: fritzBusy ? null : _loadWifiClients, child: const Text('List Wi-Fi clients')),
               ],
             ),
             if (counters != null) ...[
@@ -407,8 +386,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
             if (wifiClients.isNotEmpty) ...[
               const SizedBox(height: 8),
               const Text('Wi-Fi clients:'),
-              for (final client in wifiClients)
-                Text('- ${client.name} (${client.ip ?? 'unknown ip'})'),
+              for (final client in wifiClients) Text('- ${client.name} (${client.ip ?? 'unknown ip'})'),
             ],
           ],
         ),
