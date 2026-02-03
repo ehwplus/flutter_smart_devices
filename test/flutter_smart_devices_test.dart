@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_fritzapi/flutter_fritzapi/energy_stats.dart';
 import 'package:flutter_smart_devices/flutter_smart_devices.dart';
-import 'package:flutter_smart_devices/src/adapters/fritz_adapter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';

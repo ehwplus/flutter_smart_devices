@@ -34,10 +34,10 @@ class TapoDeviceAdapter {
     return _deviceInfo!;
   }
 
-  Future<EnergyReading> fetchEnergy() async {
+  Future<EnergyReport> fetchEnergyReport() async {
     await _loadDeviceInfo();
     final usage = await _client.getEnergyUsage();
-    return EnergyReading(todayWh: usage.todayEnergy.toDouble(), monthWh: usage.monthEnergy.toDouble(), raw: usage);
+    return EnergyReport(todayWh: usage.todayEnergy.toDouble(), monthWh: usage.monthEnergy.toDouble(), raw: usage);
   }
 
   Future<void> _ensureAuthenticated() async {

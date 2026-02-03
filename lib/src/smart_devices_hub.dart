@@ -41,10 +41,10 @@ class SmartDevicesHub {
     return devices;
   }
 
-  Future<EnergyReading?> readEnergy(String deviceId) async {
+  Future<EnergyReport?> readEnergyReport(String deviceId) async {
     if (deviceId.startsWith('tapo:')) {
       final tapo = _tapoDevices[deviceId];
-      return tapo?.fetchEnergy();
+      return tapo?.fetchEnergyReport();
     }
     if (deviceId.startsWith('fritz:')) {
       if (deviceId == 'fritz:box') {
@@ -71,7 +71,7 @@ class SmartDevicesHub {
   }
 
   Future<SmartDeviceReading> readDevice(String deviceId) async {
-    final energy = await readEnergy(deviceId);
+    final energy = await readEnergyReport(deviceId);
     final environment = await readEnvironment(deviceId);
     return SmartDeviceReading(energy: energy, environment: environment);
   }

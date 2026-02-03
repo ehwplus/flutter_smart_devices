@@ -40,7 +40,7 @@ class FritzBoxAdapter {
     return devices;
   }
 
-  Future<EnergyReading?> readEnergy(String smartDeviceId) async {
+  Future<EnergyReport?> readEnergy(String smartDeviceId) async {
     final deviceId = _parseFritzId(smartDeviceId);
     if (deviceId == null) {
       return null;
@@ -50,7 +50,7 @@ class FritzBoxAdapter {
     if (stats == null) {
       return null;
     }
-    return EnergyReading(todayWh: stats.sumDay.toDouble(), monthWh: stats.sumMonth.toDouble(), raw: stats);
+    return EnergyReport(todayWh: stats.sumDay.toDouble(), monthWh: stats.sumMonth.toDouble(), raw: stats);
   }
 
   Future<EnvironmentReading?> readEnvironment(String smartDeviceId) async {

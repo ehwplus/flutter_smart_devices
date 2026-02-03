@@ -15,7 +15,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   final tapoEmailController = TextEditingController();
   final tapoPasswordController = TextEditingController();
   SmartDeviceType tapoModel = SmartDeviceType.tapoP115;
-  EnergyReading? tapoEnergy;
+  EnergyReport? tapoEnergy;
   bool tapoBusy = false;
 
   final fritzBaseUrlController = TextEditingController(text: 'http://fritz.box');
@@ -58,7 +58,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
           model: tapoModel,
         ),
       );
-      tapoEnergy = await hub.readEnergy(device.id);
+      tapoEnergy = await hub.readEnergyReport(device.id);
     } catch (error) {
       _showMessage('Failed to read Tapo plug: $error');
     } finally {
