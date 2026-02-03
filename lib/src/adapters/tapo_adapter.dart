@@ -1,14 +1,9 @@
+import 'package:flutter_smart_devices/flutter_smart_devices.dart';
 import 'package:flutter_tapo/flutter_tapo.dart';
-
-import '../models/device_models.dart';
 
 class TapoDeviceAdapter {
   TapoDeviceAdapter(this.config)
-      : _client = HttpTapoApiClient(
-          host: config.host,
-          port: config.port,
-          useHttps: config.useHttps,
-        );
+    : _client = HttpTapoApiClient(host: config.host, port: config.port, useHttps: config.useHttps);
 
   final TapoDeviceConfig config;
   final HttpTapoApiClient _client;
@@ -24,11 +19,7 @@ class TapoDeviceAdapter {
       vendor: SmartDeviceVendor.tapo,
       type: config.model,
       capabilities: const {DeviceCapability.energy},
-      metadata: {
-        'host': config.host,
-        'port': config.port,
-        'useHttps': config.useHttps,
-      },
+      metadata: {'host': config.host, 'port': config.port, 'useHttps': config.useHttps},
     );
   }
 
@@ -46,11 +37,7 @@ class TapoDeviceAdapter {
   Future<EnergyReading> fetchEnergy() async {
     await _loadDeviceInfo();
     final usage = await _client.getEnergyUsage();
-    return EnergyReading(
-      todayWh: usage.todayEnergy.toDouble(),
-      monthWh: usage.monthEnergy.toDouble(),
-      raw: usage,
-    );
+    return EnergyReading(todayWh: usage.todayEnergy.toDouble(), monthWh: usage.monthEnergy.toDouble(), raw: usage);
   }
 
   Future<void> _ensureAuthenticated() async {
@@ -59,10 +46,7 @@ class TapoDeviceAdapter {
     }
     _isAuthenticating = true;
     try {
-      await _client.authenticate(
-        email: config.email,
-        password: config.password,
-      );
+      await _client.authenticate(email: config.email, password: config.password);
     } finally {
       _isAuthenticating = false;
     }

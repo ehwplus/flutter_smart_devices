@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:flutter_fritzapi/flutter_fritzapi.dart';
+import 'package:flutter_smart_devices/flutter_smart_devices.dart';
 import 'package:http/http.dart' as http;
-
-import '../models/device_models.dart';
 
 class FritzBoxAdapter {
   FritzBoxAdapter(this.config, {http.Client? httpClient})
@@ -72,7 +71,7 @@ class FritzBoxAdapter {
     );
   }
 
-  Future<OnlineCounters?> readOnlineCounters() async {
+  Future<OnlineCount?> readOnlineCounters() async {
     await ensureSession();
     final sid = _client.sessionId;
     if (sid == null || sid.isEmpty) {
@@ -390,7 +389,7 @@ double? _extractNumber(List<Map<String, dynamic>> maps, List<String> keys) {
   return null;
 }
 
-OnlineCounters? _extractNetworkTotals(Map<String, dynamic> json) {
+OnlineCount? _extractNetworkTotals(Map<String, dynamic> json) {
   final totals = <String, int>{};
   void walk(dynamic value) {
     if (value is Map<String, dynamic>) {
@@ -423,5 +422,5 @@ OnlineCounters? _extractNetworkTotals(Map<String, dynamic> json) {
   if (total == 0 && sent == 0 && received == 0) {
     return null;
   }
-  return OnlineCounters(totalBytes: total, bytesSent: sent, bytesReceived: received, raw: json);
+  return OnlineCount(totalBytes: total, bytesSent: sent, bytesReceived: received, raw: json);
 }

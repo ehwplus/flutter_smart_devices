@@ -1,0 +1,1 @@
+enum DeviceCapability { energy, temperature, humidity, networkCounters, wifiClients }

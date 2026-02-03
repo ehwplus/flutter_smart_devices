@@ -41,7 +41,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   bool fritzBusy = false;
   List<SmartDevice> fritzDevices = [];
   Map<String, SmartDeviceReading> readings = {};
-  OnlineCounters? counters;
+  OnlineCount? counters;
   List<WifiClient> wifiClients = [];
   String? fritzError;
 
@@ -144,7 +144,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
       fritzBusy = true;
     });
     try {
-      final result = await hub.readOnlineCounters();
+      final result = await hub.readOnlineCount();
       setState(() {
         counters = result;
       });

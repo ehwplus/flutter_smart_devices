@@ -1,8 +1,5 @@
+import 'package:flutter_smart_devices/flutter_smart_devices.dart';
 import 'package:http/http.dart' as http;
-
-import 'adapters/fritz_adapter.dart';
-import 'adapters/tapo_adapter.dart';
-import 'models/device_models.dart';
 
 class SmartDevicesHub {
   SmartDevicesHub({http.Client? httpClient}) : _httpClient = httpClient ?? http.Client();
@@ -79,7 +76,7 @@ class SmartDevicesHub {
     return SmartDeviceReading(energy: energy, environment: environment);
   }
 
-  Future<OnlineCounters?> readOnlineCounters() async {
+  Future<OnlineCount?> readOnlineCount() async {
     final fritz = _fritzAdapter;
     if (fritz == null) {
       return null;
