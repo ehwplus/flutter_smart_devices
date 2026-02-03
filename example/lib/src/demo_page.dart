@@ -14,8 +14,13 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   final tapoHostController = TextEditingController();
   final tapoEmailController = TextEditingController();
   final tapoPasswordController = TextEditingController();
+  final tapoStartDateController = TextEditingController();
+  final tapoEndDateController = TextEditingController();
   SmartDeviceType tapoModel = SmartDeviceType.tapoP115;
   EnergyReport? tapoEnergy;
+  EnergyReadings? tapoEnergyReadings;
+  SmartDevice? tapoDevice;
+  EnergyReadingIntervalType tapoReadingInterval = EnergyReadingIntervalType.hourly;
   bool tapoBusy = false;
 
   final fritzBaseUrlController = TextEditingController(text: 'http://fritz.box');
@@ -29,10 +34,20 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   String? fritzError;
 
   @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    tapoStartDateController.text = _formatDateTime(now.subtract(const Duration(days: 1)), withTime: true);
+    tapoEndDateController.text = _formatDateTime(now, withTime: true);
+  }
+
+  @override
   void dispose() {
     tapoHostController.dispose();
     tapoEmailController.dispose();
     tapoPasswordController.dispose();
+    tapoStartDateController.dispose();
+    tapoEndDateController.dispose();
     fritzBaseUrlController.dispose();
     fritzUserController.dispose();
     fritzPasswordController.dispose();
@@ -48,6 +63,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
     setState(() {
       tapoBusy = true;
       tapoEnergy = null;
+      tapoEnergyReadings = null;
     });
     try {
       final device = await hub.addTapoPlug(
@@ -58,9 +74,61 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
           model: tapoModel,
         ),
       );
+      tapoDevice = device;
       tapoEnergy = await hub.readEnergyReport(device.id);
     } catch (error) {
       _showMessage('Failed to read Tapo plug: $error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          tapoBusy = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadTapoReadings() async {
+    final device = tapoDevice;
+    if (device == null) {
+      _showMessage('Please add a Tapo plug first.');
+      return;
+    }
+
+    final start = _parseDateTime(tapoStartDateController.text, label: 'Start date');
+    if (start == null) {
+      return;
+    }
+
+    DateTime? end;
+    if (tapoReadingInterval == EnergyReadingIntervalType.hourly ||
+        tapoReadingInterval == EnergyReadingIntervalType.activity) {
+      end = _parseDateTime(tapoEndDateController.text, label: 'End date');
+      if (end == null) {
+        return;
+      }
+    } else if (tapoEndDateController.text.trim().isNotEmpty) {
+      end = _parseDateTime(tapoEndDateController.text, label: 'End date');
+      if (end == null) {
+        return;
+      }
+    }
+
+    setState(() {
+      tapoBusy = true;
+      tapoEnergyReadings = null;
+    });
+    try {
+      final readings = await hub.readEnergyReadings(
+        device.id,
+        intervalType: tapoReadingInterval,
+        startDate: start,
+        endDate: end,
+      );
+      setState(() {
+        tapoEnergyReadings = readings;
+      });
+    } catch (error) {
+      _showMessage('Failed to read Tapo energy readings: $error');
     } finally {
       if (mounted) {
         setState(() {
@@ -239,6 +307,67 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
               Text('Today: ${tapoEnergy?.todayWh?.toStringAsFixed(1)} Wh'),
               Text('Month: ${tapoEnergy?.monthWh?.toStringAsFixed(1)} Wh'),
             ],
+            const Divider(height: 24),
+            Text('Energy readings', style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            DropdownButton<EnergyReadingIntervalType>(
+              value: tapoReadingInterval,
+              items: const [
+                DropdownMenuItem(value: EnergyReadingIntervalType.hourly, child: Text('Hourly')),
+                DropdownMenuItem(value: EnergyReadingIntervalType.activity, child: Text('Activity')),
+                DropdownMenuItem(value: EnergyReadingIntervalType.daily, child: Text('Daily (quarter)')),
+                DropdownMenuItem(value: EnergyReadingIntervalType.monthly, child: Text('Monthly (year)')),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    tapoReadingInterval = value;
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: tapoStartDateController,
+              decoration: const InputDecoration(
+                labelText: 'Start date (ISO)',
+                helperText: 'Example: 2026-02-01 or 2026-02-01T12:00',
+              ),
+            ),
+            TextField(
+              controller: tapoEndDateController,
+              decoration: const InputDecoration(
+                labelText: 'End date (ISO)',
+                helperText: 'Required for hourly/activity. Optional otherwise.',
+              ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: tapoBusy ? null : _loadTapoReadings,
+              icon: tapoBusy
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.query_stats),
+              label: const Text('Fetch energy readings'),
+            ),
+            if (tapoEnergyReadings != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Entries: ${tapoEnergyReadings!.entries.length} '
+                '(${tapoEnergyReadings!.intervalType.name})',
+              ),
+              if (tapoEnergyReadings!.entries.isNotEmpty) ...[
+                Text(
+                  'First: ${tapoEnergyReadings!.entries.first.dateTimeFrom} '
+                  '→ ${tapoEnergyReadings!.entries.first.dateTimeTo} '
+                  '(${tapoEnergyReadings!.entries.first.value?.toStringAsFixed(1) ?? '-' } Wh)',
+                ),
+                Text(
+                  'Last: ${tapoEnergyReadings!.entries.last.dateTimeFrom} '
+                  '→ ${tapoEnergyReadings!.entries.last.dateTimeTo} '
+                  '(${tapoEnergyReadings!.entries.last.value?.toStringAsFixed(1) ?? '-' } Wh)',
+                ),
+              ],
+            ],
           ],
         ),
       ),
@@ -379,5 +508,26 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String _formatDateTime(DateTime date, {required bool withTime}) {
+    final iso = date.toIso8601String();
+    if (withTime) {
+      return iso.substring(0, 16);
+    }
+    return iso.substring(0, 10);
+  }
+
+  DateTime? _parseDateTime(String raw, {required String label}) {
+    final value = raw.trim();
+    if (value.isEmpty) {
+      _showMessage('$label is required.');
+      return null;
+    }
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) {
+      _showMessage('$label is not a valid ISO date.');
+    }
+    return parsed;
   }
 }
