@@ -114,8 +114,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: aee64d77da8ca0ab1a55be93affaf4913998e3bc
+      ref: "7ebc795f47b8595ef602d89fb33e2dffb1bbc2e7"
+      resolved-ref: "7ebc795f47b8595ef602d89fb33e2dffb1bbc2e7"
       url: "https://github.com/ehwplus/flutter_tapo.git"
     source: git
     version: "0.0.1"

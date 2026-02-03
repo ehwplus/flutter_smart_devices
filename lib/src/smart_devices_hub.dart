@@ -76,6 +76,19 @@ class SmartDevicesHub {
     return SmartDeviceReading(energyReport: energyReport, environment: environment);
   }
 
+  Future<EnergyReadings?> readEnergyReadings(
+    String deviceId, {
+    required EnergyReadingIntervalType intervalType,
+    required DateTime startDate,
+    DateTime? endDate,
+  }) async {
+    if (deviceId.startsWith('tapo:')) {
+      final tapo = _tapoDevices[deviceId];
+      return tapo?.fetchEnergyReadings(intervalType: intervalType, startDate: startDate, endDate: endDate);
+    }
+    return null;
+  }
+
   Future<OnlineCount?> readOnlineCount() async {
     final fritz = _fritzAdapter;
     if (fritz == null) {
