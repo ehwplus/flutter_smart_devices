@@ -79,7 +79,7 @@ class SmartDevicesHub {
     return SmartDeviceReading(energy: energy, environment: environment);
   }
 
-  Future<NetworkCounters?> readOnlineCounters() async {
+  Future<OnlineCounters?> readOnlineCounters() async {
     final fritz = _fritzAdapter;
     if (fritz == null) {
       return null;

@@ -72,7 +72,7 @@ class FritzBoxAdapter {
     );
   }
 
-  Future<NetworkCounters?> readOnlineCounters() async {
+  Future<OnlineCounters?> readOnlineCounters() async {
     await ensureSession();
     final sid = _client.sessionId;
     if (sid == null || sid.isEmpty) {
@@ -390,7 +390,7 @@ double? _extractNumber(List<Map<String, dynamic>> maps, List<String> keys) {
   return null;
 }
 
-NetworkCounters? _extractNetworkTotals(Map<String, dynamic> json) {
+OnlineCounters? _extractNetworkTotals(Map<String, dynamic> json) {
   final totals = <String, int>{};
   void walk(dynamic value) {
     if (value is Map<String, dynamic>) {
@@ -423,5 +423,5 @@ NetworkCounters? _extractNetworkTotals(Map<String, dynamic> json) {
   if (total == 0 && sent == 0 && received == 0) {
     return null;
   }
-  return NetworkCounters(totalBytes: total, bytesSent: sent, bytesReceived: received, raw: json);
+  return OnlineCounters(totalBytes: total, bytesSent: sent, bytesReceived: received, raw: json);
 }

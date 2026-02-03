@@ -41,7 +41,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
   bool fritzBusy = false;
   List<SmartDevice> fritzDevices = [];
   Map<String, SmartDeviceReading> readings = {};
-  NetworkCounters? counters;
+  OnlineCounters? counters;
   List<WifiClient> wifiClients = [];
   String? fritzError;
 

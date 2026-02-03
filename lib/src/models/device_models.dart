@@ -2,21 +2,9 @@ import 'package:meta/meta.dart';
 
 enum SmartDeviceVendor { tapo, fritz }
 
-enum SmartDeviceType {
-  tapoP100,
-  tapoP115,
-  fritzDect200,
-  fritzSmartControl440,
-  fritzBox,
-}
+enum SmartDeviceType { tapoP100, tapoP115, fritzDect200, fritzSmartControl440, fritzBox }
 
-enum DeviceCapability {
-  energy,
-  temperature,
-  humidity,
-  networkCounters,
-  wifiClients,
-}
+enum DeviceCapability { energy, temperature, humidity, networkCounters, wifiClients }
 
 @immutable
 class SmartDevice {
@@ -36,11 +24,7 @@ class SmartDevice {
   final Set<DeviceCapability> capabilities;
   final Map<String, Object?> metadata;
 
-  SmartDevice copyWith({
-    String? name,
-    Set<DeviceCapability>? capabilities,
-    Map<String, Object?>? metadata,
-  }) {
+  SmartDevice copyWith({String? name, Set<DeviceCapability>? capabilities, Map<String, Object?>? metadata}) {
     return SmartDevice(
       id: id,
       name: name ?? this.name,
@@ -53,12 +37,7 @@ class SmartDevice {
 }
 
 class EnergyReading {
-  const EnergyReading({
-    this.todayWh,
-    this.monthWh,
-    this.powerW,
-    this.raw,
-  });
+  const EnergyReading({this.todayWh, this.monthWh, this.powerW, this.raw});
 
   final double? todayWh;
   final double? monthWh;
@@ -67,24 +46,15 @@ class EnergyReading {
 }
 
 class EnvironmentReading {
-  const EnvironmentReading({
-    this.temperatureCelsius,
-    this.humidityPercent,
-    this.raw,
-  });
+  const EnvironmentReading({this.temperatureCelsius, this.humidityPercent, this.raw});
 
   final double? temperatureCelsius;
   final double? humidityPercent;
   final Object? raw;
 }
 
-class NetworkCounters {
-  const NetworkCounters({
-    required this.totalBytes,
-    required this.bytesSent,
-    required this.bytesReceived,
-    this.raw,
-  });
+class OnlineCounters {
+  const OnlineCounters({required this.totalBytes, required this.bytesSent, required this.bytesReceived, this.raw});
 
   final int totalBytes;
   final int bytesSent;
@@ -93,13 +63,7 @@ class NetworkCounters {
 }
 
 class WifiClient {
-  const WifiClient({
-    required this.name,
-    this.ip,
-    this.mac,
-    this.connectionType,
-    this.isOnline,
-  });
+  const WifiClient({required this.name, this.ip, this.mac, this.connectionType, this.isOnline});
 
   final String name;
   final String? ip;
@@ -109,21 +73,14 @@ class WifiClient {
 }
 
 class SmartDeviceReading {
-  const SmartDeviceReading({
-    this.energy,
-    this.environment,
-  });
+  const SmartDeviceReading({this.energy, this.environment});
 
   final EnergyReading? energy;
   final EnvironmentReading? environment;
 }
 
 class FritzBoxConfig {
-  const FritzBoxConfig({
-    this.baseUrl = 'http://fritz.box',
-    this.username,
-    required this.password,
-  });
+  const FritzBoxConfig({this.baseUrl = 'http://fritz.box', this.username, required this.password});
 
   final String baseUrl;
   final String? username;
