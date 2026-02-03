@@ -1,4 +1,4 @@
-export 'energy_reading.dart';
+export 'energy_readings.dart';
 export 'energy_report.dart';
 export 'environment_reading.dart';
 export 'online_count.dart';

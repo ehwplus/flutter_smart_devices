@@ -1,8 +1,9 @@
 import 'package:flutter_smart_devices/flutter_smart_devices.dart';
 
 class SmartDeviceReading {
-  const SmartDeviceReading({this.energy, this.environment});
+  const SmartDeviceReading({this.energyReadings, this.energyReport, this.environment});
 
-  final EnergyReport? energy;
+  final EnergyReadings? energyReadings;
+  final EnergyReport? energyReport;
   final EnvironmentReading? environment;
 }

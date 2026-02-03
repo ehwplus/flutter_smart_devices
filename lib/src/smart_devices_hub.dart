@@ -71,9 +71,9 @@ class SmartDevicesHub {
   }
 
   Future<SmartDeviceReading> readDevice(String deviceId) async {
-    final energy = await readEnergyReport(deviceId);
+    final energyReport = await readEnergyReport(deviceId);
     final environment = await readEnvironment(deviceId);
-    return SmartDeviceReading(energy: energy, environment: environment);
+    return SmartDeviceReading(energyReport: energyReport, environment: environment);
   }
 
   Future<OnlineCount?> readOnlineCount() async {

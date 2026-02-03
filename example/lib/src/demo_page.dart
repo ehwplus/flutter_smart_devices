@@ -330,7 +330,7 @@ class _SmartDevicesDemoPageState extends State<SmartDevicesDemoPage> {
               '${entry.key}: '
               'temp=${entry.value.environment?.temperatureCelsius?.toStringAsFixed(1) ?? '-'} C, '
               'humidity=${entry.value.environment?.humidityPercent?.toStringAsFixed(0) ?? '-'} %, '
-              'today=${entry.value.energy?.todayWh?.toStringAsFixed(1) ?? '-'} Wh',
+              'today=${entry.value.energyReport?.todayWh?.toStringAsFixed(1) ?? '-'} Wh',
             ),
           ),
       ],
